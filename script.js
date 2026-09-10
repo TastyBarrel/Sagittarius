@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // tell the "submitter" anything failed — silently drop it and show the
       // normal success state, so scripted spam gets no signal to adapt to.
       const gotcha = form.querySelector('[name="_gotcha"]');
-      const decoy = form.querySelector('[name="phone"]');
+      const decoy = form.querySelector('[name="hp_check_2x9"]');
       const tooFast = Date.now() - pageLoadedAt < 3000;
       const honeypotTripped = (gotcha && gotcha.value) || (decoy && decoy.value);
 
