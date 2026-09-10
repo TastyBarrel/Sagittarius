@@ -389,7 +389,8 @@ button:hover .arrow {
    ------------------------------------------------------------------------- */
 .hero {
   position: relative;
-  padding: var(--space-6) 0 var(--space-6);
+  padding-top: var(--space-6);
+  padding-bottom: var(--space-6);
   overflow: hidden;
 }
 .hero .label {
