@@ -1,7 +1,5 @@
 // Sagittarius Consulting — shared behavior
 
-const pageLoadedAt = Date.now();
-
 document.addEventListener("DOMContentLoaded", () => {
   // Mobile nav toggle
   const toggle = document.querySelector(".menu-toggle");
@@ -52,12 +50,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Contact form — submits to Formspree via fetch so the page never leaves
+  // Contact form — Web3Forms, following their documented AJAX/JSON pattern
   const form = document.querySelector("#contact-form");
   if (form) {
     const submitBtn = form.querySelector('button[type="submit"]');
     const note = document.querySelector("#form-status");
-    const submitLabel = submitBtn ? submitBtn.innerHTML : "";
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -65,48 +62,35 @@ document.addEventListener("DOMContentLoaded", () => {
         note.textContent = "";
         note.classList.remove("form-note--error");
       }
-
-      // --- Spam checks: honeypot fields + minimum time-on-page ---
-      // Real visitors don't fill in fields they can't see, and can't fill out
-      // a five-field form in under 3 seconds. Bots regularly do both. We don't
-      // tell the "submitter" anything failed — silently drop it and show the
-      // normal success state, so scripted spam gets no signal to adapt to.
-      const gotcha = form.querySelector('[name="_gotcha"]');
-      const decoy = form.querySelector('[name="hp_check_2x9"]');
-      const tooFast = Date.now() - pageLoadedAt < 3000;
-      const honeypotTripped = (gotcha && gotcha.value) || (decoy && decoy.value);
-
-      if (honeypotTripped || tooFast) {
-        form.reset();
-        form.style.display = "none";
-        if (note) {
-          note.textContent =
-            "Thanks — that's been sent. We'll get back to you soon.";
-        }
-        return;
-      }
-
       if (submitBtn) {
         submitBtn.disabled = true;
         submitBtn.style.opacity = "0.6";
       }
 
-      try {
-        const response = await fetch(form.action, {
-          method: "POST",
-          body: new FormData(form),
-          headers: { Accept: "application/json" },
-        });
+      const formData = new FormData(form);
+      const object = Object.fromEntries(formData);
+      const json = JSON.stringify(object);
 
-        if (response.ok) {
+      try {
+        const response = await fetch("https://api.web3forms.com/submit", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: json,
+        });
+        const result = await response.json();
+
+        if (response.status === 200 && result.success) {
           form.reset();
           form.style.display = "none";
           if (note) {
             note.textContent =
-              "Thanks — that's been sent. We'll get back to you soon.";
+              "Thanks, that's been sent. We'll get back to you soon.";
           }
         } else {
-          throw new Error("Form submission failed");
+          throw new Error(result.message || "Form submission failed");
         }
       } catch (err) {
         if (note) {
