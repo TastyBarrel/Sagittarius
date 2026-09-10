@@ -62,6 +62,19 @@ document.addEventListener("DOMContentLoaded", () => {
         note.textContent = "";
         note.classList.remove("form-note--error");
       }
+
+      // hCaptcha injects a hidden textarea named h-captcha-response once solved.
+      // If it's empty, the widget hasn't been completed yet — stop here rather
+      // than let Web3Forms reject the submission with a less helpful message.
+      const captchaField = form.querySelector('[name="h-captcha-response"]');
+      if (!captchaField || !captchaField.value) {
+        if (note) {
+          note.textContent = "Please complete the captcha before submitting.";
+          note.classList.add("form-note--error");
+        }
+        return;
+      }
+
       if (submitBtn) {
         submitBtn.disabled = true;
         submitBtn.style.opacity = "0.6";
