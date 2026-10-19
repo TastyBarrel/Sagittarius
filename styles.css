@@ -848,3 +848,26 @@ button:hover .arrow {
 /* -------------------------------------------------------------------------
    Reveal-block trigger observed generically alongside .diagram in script.js
    ------------------------------------------------------------------------- */
+
+/* Home: compact three-up offerings */
+.offer-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+.offer { border-top: 1px solid var(--stone); padding-top: var(--space-3); min-width: 0; }
+.offer .num {
+  display: block;
+  font-family: var(--serif);
+  font-size: 1.6rem;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--copper);
+  margin-bottom: 0.7rem;
+}
+.offer h3 { font-size: 1.45rem; margin-bottom: 0.5em; }
+.offer p { font-size: 0.98rem; }
+@media (max-width: 800px) {
+  .offer-grid { grid-template-columns: 1fr; gap: var(--space-3); }
+}
